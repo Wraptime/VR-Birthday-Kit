@@ -12,9 +12,12 @@ import {
   Animated,
   Sphere,
   Sound,
-  Plane
+  Plane,
+  NativeModules
 } from 'react-vr';
 import {range} from 'ramda'
+import * as queryString from 'query-string';
+
 const AnimatedSphere = Animated.createAnimatedComponent(Sphere)
 const AnimatedCylinder = Animated.createAnimatedComponent(Cylinder)
 const AGE = 26
@@ -234,7 +237,16 @@ class DiscoLight extends React.Component {
   }
 }
 
-export default class vitaly extends React.Component {
+export default class VrBirthday extends React.Component {
+  constructor() {
+    super()
+    const params = queryString.parse(NativeModules.Location.search)
+    console.log(params)
+    this.state = {
+      age: parseInt(params.age) || 1,
+      name: params.name || ''
+    }
+  }
   render() {
     return (
       <View>
@@ -327,7 +339,7 @@ export default class vitaly extends React.Component {
           }}>Happy Birthday</Text>
           <Text style={{
             textAlign: 'center',
-          }}>Vitaly</Text>
+          }}>{this.state.name}</Text>
         </View>
         <Cylinder
           radiusTop={0.2}
@@ -354,12 +366,12 @@ export default class vitaly extends React.Component {
         <Balloon />
         <Balloon color="yellow" num={1} position={[-0.5, 0, 0]} />
         <Balloon color="blue" num={2} position={[0.5, 0, 0]} />
-        {range(0, AGE).map((i) => {
-          return <Candle position={[Math.cos(i * Math.PI / (AGE / 2)) * 0.175, -0.235, (Math.sin(i * Math.PI / (AGE / 2)) * 0.175) - 0.5]} />
+        {range(0, this.state.age).map((i) => {
+          return <Candle position={[Math.cos(i * Math.PI / (this.state.age / 2)) * 0.175, -0.235, (Math.sin(i * Math.PI / (this.state.age / 2)) * 0.175) - 0.5]} />
         })}
       </View>
     );
   }
 };
 
-AppRegistry.registerComponent('vitaly', () => vitaly);
+AppRegistry.registerComponent('VrBirthday', () => VrBirthday);

@@ -1,21 +1,129 @@
 <html>
   <head>
-    <title>vitaly</title>
-    <style>body { margin: 0; }</style>
+    <title>VR Birthday: Send your friends or loved one a virtual reality birthday cake!</title>
+    <style>
+      body {
+        color: white;
+        text-align: center;
+        font-family: 'Helvetica', Arial, sans-serif;
+        margin: 0;
+      }
+      .bg {
+        z-index: -1;
+        background: url('./bg.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+      }
+      .content {
+        margin: 2rem auto;
+        min-height: calc(100vh - 9.7rem);
+        max-width: 35rem;
+      }
+      form {
+        position: relative;
+        display: block;
+      }
+      .text-field {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: white;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+        margin: 1rem 0;
+        width: 100%;
+        padding: 1rem 0;
+        font-size: 1.5rem;
+      }
+      .submit-button {
+        margin: 1rem 0;
+        display: inline-block;
+        width: 100%;
+        padding: 1rem 0;
+        font-size: 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        cursor: pointer;
+        border: none;
+        color: white;
+      }
+      .footer {
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background: rgba(255,0,0,0.8);
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+      }
+      .share-link {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem 0;
+      }
+      a {
+        text-decoration: none;
+        color: white;
+      }
+      .link {
+        display: flex;
+        align-items: center;
+      }
+      .logo {
+        margin-right: 1rem;
+      }
+      .result {
+        display: none;
+      }
+    </style>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   </head>
   <body>
-    <!-- When you're ready to deploy your app, update this line to point to your compiled client.bundle.js -->
-    <script src="./client.bundle?platform=vr"></script>
+    <div class="bg"></div>
+    <div class="content">
+      <h1>VR Birthday</h1>
+      <p>Send your friend or loved one an immesive birthday party in Virtual Reality</p>
+      <form action="vr.html" method="get" id='form'>
+        <div>
+          <input class="text-field" id='name' name="name" placeholder="Name (e.g. John)" />
+        </div>
+        <div>
+          <input class="text-field" id='age' name="age" placeholder="Age (e.g. 26)" type="number" />
+        </div>
+        <input class="submit-button" type="submit" value="Create" />
+      </form>
+      <div class="result">
+        <h2>Share link</h2>
+        <div class="share-link">https://vr-bday.wraptime.io/</div>
+        <a href="" class="try-it submit-button">Try it</a>
+      </div>
+    </div>
+    <div class="footer">
+      <a href="https://wraptime.io" target="_blank" class="link">
+        <img src="https://wraptime.io/logo.png" srcset="https://wraptime.io/logo@2x.png 2x" alt="Wraptime" class="logo">
+        Made with &hearts; by Wraptime
+      </a>
+    </div>
     <script>
-      // Initialize the React VR application
-      ReactVR.init(
-        // When you're ready to deploy your app, update this line to point to
-        // your compiled index.bundle.js
-        '../index.vr.bundle?platform=vr&dev=true',
-        // Attach it to the body tag
-        document.body
-      );
+      document.addEventListener("DOMContentLoaded", function() {
+        var formEl = document.getElementById('form')
+        var resultEl = document.getElementsByClassName('result')[0]
+        var shareLinkEl = document.getElementsByClassName('share-link')[0]
+        var nameEl = document.getElementById('name')
+        var ageEl = document.getElementById('age')
+        var tryEl = document.getElementsByClassName('try-it')[0]
+        formEl.onsubmit = function(e) {
+          e.preventDefault();
+          resultEl.style.display = 'block';
+          var linkAddress = './vr.html?age=' + ageEl.value + '&name=' + nameEl.value
+          shareLinkEl.innerHTML = linkAddress
+          tryEl.href = linkAddress
+        }
+      });
     </script>
   </body>
 </html>
