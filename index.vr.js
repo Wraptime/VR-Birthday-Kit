@@ -13,13 +13,17 @@ import {
   Sphere,
   Sound,
   Plane,
-  NativeModules
+  NativeModules,
+  Box,
+  DirectionalLight
 } from 'react-vr';
 import {range} from 'ramda'
 import * as queryString from 'query-string';
 
 const AnimatedSphere = Animated.createAnimatedComponent(Sphere)
 const AnimatedCylinder = Animated.createAnimatedComponent(Cylinder)
+const AnimatedPlane = Animated.createAnimatedComponent(Plane)
+const AnimatedBox = Animated.createAnimatedComponent(Box)
 const AGE = 26
 const Candle = ({position}) => (
   <View
@@ -48,7 +52,6 @@ const Candle = ({position}) => (
           translateY: 0.015
         }]
       }}
-      lit
     />
     {[0,1,2,3].map((i) => (
       <Fire num={i} key={i} />
@@ -237,6 +240,74 @@ class DiscoLight extends React.Component {
   }
 }
 
+class Confetti extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      animationValue: new Animated.Value(0),
+      color: ['red', 'blue', 'green', 'yellow', 'purple', 'pink'][Math.floor(Math.random() * 6)],
+    }
+  }
+
+  componentDidMount() {
+    this.animate()
+  }
+
+  animate = () => {
+    this.state.animationValue.setValue(0)
+    Animated.timing(          // Uses easing functions
+      this.state.animationValue,    // The value to drive
+      {
+        duration: Math.random() * 4000 + 1400,
+        toValue: 1,
+        delay: this.state.animated ? Math.random() * 200: 600,
+        easing: x => x
+    }
+    ).start(() => {
+      this.setState({
+        animated: true,
+        color: ['red', 'blue', 'green', 'yellow', 'purple', 'pink'][Math.floor(Math.random() * 6)]
+      }, () => {
+      this.animate()
+      })
+    });
+  }
+
+  render() {
+    return (
+      <AnimatedBox
+        lit
+        radius={0.01}
+        dimWidth={Math.random() * 0.02 + 0.01}
+        dimHeight={Math.random() * 0.02 + 0.01}
+        dimDepth={0.001}
+        style={{
+          color: this.state.color,
+          transform: [
+            {translate: [Math.random() * 2 - 1, 0, Math.random() * -2]},
+            {translateY: this.state.animationValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, -2]
+            })},
+            {rotateX: this.state.animationValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [Math.random() * 360, Math.random() * 720]
+            })},
+            {rotateY: this.state.animationValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [Math.random() * 360, Math.random() * 720]
+            })},
+            {rotateZ: this.state.animationValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [Math.random() * 360, Math.random() * 720]
+            })},
+          ]
+        }}
+      />
+    )
+  }
+}
+
 export default class VrBirthday extends React.Component {
   constructor() {
     super()
@@ -315,12 +386,21 @@ export default class VrBirthday extends React.Component {
         <AmbientLight intensity={0.4} />
         <DiscoLight />
         <PointLight
-          intensity={0.5}
-          distance={1}
+          intensity={0.6}
+          distance={1.5}
           decay={2}
           style={{
             position: 'absolute',
-            transform: [{translate: [0,0.5,-0.75]}],
+            transform: [{translate: [-1,0.5,-1.75]}],
+          }}
+        />
+        <PointLight
+          intensity={0.6}
+          distance={1.5}
+          decay={2}
+          style={{
+            position: 'absolute',
+            transform: [{translate: [1,0.5,-1.75]}],
           }}
         />
         <View
@@ -369,6 +449,18 @@ export default class VrBirthday extends React.Component {
         {range(0, this.state.age).map((i) => {
           return <Candle position={[Math.cos(i * Math.PI / (this.state.age / 2)) * 0.175, -0.235, (Math.sin(i * Math.PI / (this.state.age / 2)) * 0.175) - 0.5]} />
         })}
+        <View
+          style={{
+            position: 'absolute',
+            transform: [{
+              translate: [0,1,0]
+            }]
+          }}
+        >
+          {range(0, 50).map(i => (
+            <Confetti />
+          ))}
+        </View>
       </View>
     );
   }
